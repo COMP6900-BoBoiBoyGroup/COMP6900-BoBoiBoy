@@ -1,0 +1,47 @@
+# Root .gitignore for the COMP6900 "Rindr" fruit identification project.
+# Applies across all subprojects (frontend/, backend/, model/, etc.) added
+# by any team member.
+
+# Dependencies & build artifacts (any subfolder)
+**/node_modules/
+**/.next/
+**/out/
+**/build/
+**/dist/
+**/*.tsbuildinfo
+**/next-env.d.ts
+
+# Python (model training / backend, if Python-based)
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/.venv/
+**/venv/
+**/env/
+**/*.egg-info/
+
+# Vercel
+**/.vercel
+
+# Env files / secrets - never commit these
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+
+# Large datasets: keep raw images out of git by default (see
+# model/dataset README for how/where to store or link the actual dataset -
+# e.g. Git LFS, cloud storage, or a shared drive link - since thousands of
+# training photos should not be committed as plain files to GitHub).
+**/dataset/raw/
+**/dataset/**/*.jpg
+**/dataset/**/*.jpeg
+**/dataset/**/*.png
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

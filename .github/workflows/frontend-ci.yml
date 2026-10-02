@@ -1,0 +1,57 @@
+# .github/workflows/frontend-ci.yml
+#
+# CI workflow for the frontend/ app only. Scoped with a `paths` filter so
+# it only runs when files under frontend/ change (pushes/PRs that only
+# touch backend/, model/, or dataset/ won't trigger it), and every step
+# uses `working-directory: frontend` so it never touches other folders.
+#
+# How this fits into the overall CI/CD pipeline:
+#   1. CI (this file): lint, type-check, and build the frontend on every
+#      push/PR touching frontend/. Enable branch protection on `main` and
+#      require this check to pass before merging.
+#   2. CD (Vercel's Git integration): once code lands on `main`, Vercel
+#      automatically builds and deploys frontend/ (Root Directory is set to
+#      "frontend" in the Vercel project settings - see frontend/README.md).
+name: Frontend CI
+
+on:
+  push:
+    branches: [main]
+    paths: ["frontend/**"]
+  pull_request:
+    branches: [main]
+    paths: ["frontend/**"]
+
+jobs:
+  build-and-check:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Type-check
+        run: npm run typecheck
+
+      - name: Build
+        run: npm run build
+        env:
+          # Build-time env var needed so `next build` succeeds even though
+          # no real backend is configured in CI. Demo mode avoids requiring
+          # live secrets just to verify the app compiles.
+          NEXT_PUBLIC_DEMO_MODE: "true"
