@@ -13,7 +13,7 @@
 // and is triggered by the parent (app/page.tsx), which keeps this
 // component easy to reuse/test in isolation.
 
-import { ChangeEvent, DragEvent, useCallback, useRef, useState } from "react";
+import { ChangeEvent, DragEvent, useRef, useState } from "react";
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const MAX_SIZE_BYTES = 8 * 1024 * 1024; // 8 MB - mirrors the server-side check
@@ -37,27 +37,25 @@ export default function ImageUploader({
   const [isDragging, setIsDragging] = useState(false);
   const [validationError, setValidationError] = useState<string | null>(null);
 
-  const validateAndEmit = useCallback(
-    (file: File | undefined | null) => {
-      if (!file) return;
+  // Checks the chosen file is a supported image type/size, then passes it
+  // up to the parent component (app/page.tsx) along with a local preview
+  // URL so it can show a thumbnail without any network request.
+  function validateAndEmit(file: File | undefined | null) {
+    if (!file) return;
 
-      if (!ALLOWED_TYPES.includes(file.type)) {
-        setValidationError("Please choose a JPEG, PNG, or WEBP image.");
-        return;
-      }
-      if (file.size > MAX_SIZE_BYTES) {
-        setValidationError("That image is too large - please pick one under 8 MB.");
-        return;
-      }
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      setValidationError("Please choose a JPEG, PNG, or WEBP image.");
+      return;
+    }
+    if (file.size > MAX_SIZE_BYTES) {
+      setValidationError("That image is too large - please pick one under 8 MB.");
+      return;
+    }
 
-      setValidationError(null);
-      // Create a temporary local URL so we can preview the image
-      // immediately, without waiting for any network round-trip.
-      const previewUrl = URL.createObjectURL(file);
-      onFileSelected(file, previewUrl);
-    },
-    [onFileSelected]
-  );
+    setValidationError(null);
+    const previewUrl = URL.createObjectURL(file);
+    onFileSelected(file, previewUrl);
+  }
 
   function handleInputChange(e: ChangeEvent<HTMLInputElement>) {
     validateAndEmit(e.target.files?.[0]);

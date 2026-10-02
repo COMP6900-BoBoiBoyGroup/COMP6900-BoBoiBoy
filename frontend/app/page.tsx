@@ -2,23 +2,25 @@
 
 // app/page.tsx
 //
-// Top-level page component. This is the "orchestrator": it owns the app's
-// state machine (idle -> loading -> success/error) and wires together the
-// ImageUploader (requirement 3: upload a photo), the call to our backend
-// proxy (lib/api.ts), and the ResultPanel (requirement 4: show identified
-// fruit + nutrition/health/usage info).
+// Main (and only) page of the app. It keeps track of what step the user is
+// on (idle -> loading -> success/error) and connects the three main parts
+// of the UI together:
+//   1. ImageUploader   - lets the user choose a photo (brief requirement 3)
+//   2. The "Identify fruit" button - sends the photo to lib/api.ts, which
+//      calls our /api/predict route
+//   3. ResultPanel     - shows the identified fruit + nutrition/health/
+//      ripeness/usage info (brief requirement 4)
 //
-// Development note: state is kept local with React's useState rather than
-// a global store (Redux/Zustand etc.) because this is a single-page,
-// single-flow app - there is no shared state that multiple distant
-// components need, so the simplest tool that works was chosen.
+// State is kept with plain useState hooks since this is a single page with
+// a simple, linear flow - there's no need for a global state library here.
 
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import ImageUploader from "@/components/ImageUploader";
 import ResultPanel from "@/components/ResultPanel";
-import { identifyFruit, PredictionRequestError } from "@/lib/api";
+import { identifyFruit } from "@/lib/api";
 import { PredictionResult } from "@/lib/types";
 
+// The possible stages the page can be in.
 type Status = "idle" | "loading" | "error" | "success";
 
 export default function HomePage() {
@@ -28,17 +30,20 @@ export default function HomePage() {
   const [result, setResult] = useState<PredictionResult | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const handleFileSelected = useCallback((file: File, url: string) => {
+  // Called by ImageUploader when the user picks a new photo.
+  function handleFileSelected(file: File, url: string) {
     setSelectedFile(file);
     setPreviewUrl(url);
-    // Picking a new photo invalidates any previous result.
+    // Picking a new photo clears any previous result.
     setStatus("idle");
     setResult(null);
     setErrorMessage(null);
-  }, []);
+  }
 
-  const handleIdentify = useCallback(async () => {
+  // Called when the user clicks "Identify fruit".
+  async function handleIdentify() {
     if (!selectedFile) return;
+
     setStatus("loading");
     setErrorMessage(null);
 
@@ -48,23 +53,24 @@ export default function HomePage() {
       setStatus("success");
     } catch (err) {
       const message =
-        err instanceof PredictionRequestError
+        err instanceof Error
           ? err.message
           : "Unexpected error while identifying the fruit. Please try again.";
       setErrorMessage(message);
       setStatus("error");
     }
-  }, [selectedFile]);
+  }
 
-  const handleReset = useCallback(() => {
+  // Clears everything so the user can start over with a new photo.
+  function handleReset() {
     setSelectedFile(null);
     setPreviewUrl(null);
     setStatus("idle");
     setResult(null);
     setErrorMessage(null);
-  }, []);
+  }
 
-  const canIdentify = Boolean(selectedFile) && status !== "loading";
+  const canIdentify = selectedFile !== null && status !== "loading";
 
   return (
     <main className="mx-auto flex min-h-screen max-w-5xl flex-col gap-8 px-4 py-10 sm:py-14">

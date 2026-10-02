@@ -1,27 +1,19 @@
 // lib/api.ts
 //
-// Small client-side helper for calling our own `/api/predict` route. Kept
-// separate from the UI component so the fetch/error-handling logic is easy
-// to unit test and reuse, and so components don't need to know about
-// FormData / HTTP details.
+// Small helper that the page component calls to send the chosen photo to
+// our own /api/predict route. Keeping this in its own function (instead of
+// writing the fetch call straight inside the component) just makes
+// app/page.tsx easier to read.
 
 import { PredictionError, PredictionResult } from "./types";
 
-/** Thrown when the API call fails or the backend returns an error payload. */
-export class PredictionRequestError extends Error {}
-
-/**
- * Sends the given image file to our serverless API route, which in turn
- * forwards it to the backend model service. Returns the parsed prediction
- * on success, or throws a PredictionRequestError with a user-friendly
- * message on failure.
- */
-export async function identifyFruit(
-  file: File
-): Promise<PredictionResult> {
+// Sends the image file to /api/predict and returns the prediction.
+// If anything goes wrong, it throws a plain Error with a message that is
+// safe to show to the user.
+export async function identifyFruit(file: File): Promise<PredictionResult> {
+  // "image" is the field name our /api/predict route expects the file
+  // under (see app/api/predict/route.ts).
   const formData = new FormData();
-  // "image" is the field name our /api/predict route (and, in turn, the
-  // backend) expects to find the uploaded file under.
   formData.append("image", file);
 
   let response: Response;
@@ -31,23 +23,20 @@ export async function identifyFruit(
       body: formData,
     });
   } catch {
-    // Typically a network/connectivity failure (user offline, CORS, etc.).
-    throw new PredictionRequestError(
+    // This usually means the user is offline or the server can't be reached.
+    throw new Error(
       "Could not reach the server. Check your internet connection and try again."
     );
   }
 
   if (!response.ok) {
-    // Try to extract a meaningful error message from the JSON body;
-    // fall back to a generic message if the body isn't valid JSON.
-    let message = `Request failed with status ${response.status}.`;
-    try {
-      const body = (await response.json()) as PredictionError;
-      if (body?.error) message = body.error;
-    } catch {
-      // Ignore JSON parse errors; keep the generic message above.
-    }
-    throw new PredictionRequestError(message);
+    // Try to read a helpful message from the error response body.
+    const errorBody = (await response.json().catch(() => null)) as
+      | PredictionError
+      | null;
+    throw new Error(
+      errorBody?.error ?? `Request failed with status ${response.status}.`
+    );
   }
 
   const data = (await response.json()) as PredictionResult;

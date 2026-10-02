@@ -13,9 +13,9 @@
 
 import { FruitInfo, FruitLabel } from "./types";
 
-export const FRUIT_INFO: Record<Exclude<FruitLabel, "unknown">, FruitInfo> = {
+// A simple lookup object with one entry per fruit we support.
+export const FRUIT_INFO: { apple: FruitInfo; banana: FruitInfo } = {
   apple: {
-    label: "apple",
     displayName: "Apple",
     emoji: "🍎",
     summary:
@@ -49,7 +49,6 @@ export const FRUIT_INFO: Record<Exclude<FruitLabel, "unknown">, FruitInfo> = {
     ],
   },
   banana: {
-    label: "banana",
     displayName: "Banana",
     emoji: "🍌",
     summary:
@@ -84,14 +83,11 @@ export const FRUIT_INFO: Record<Exclude<FruitLabel, "unknown">, FruitInfo> = {
   },
 };
 
-/**
- * Convenience lookup that safely handles the "unknown" label (and any
- * unexpected string from the backend) by returning `undefined` instead of
- * throwing, so the UI can show a friendly fallback message.
- */
+// Looks up the info for a given label. Returns undefined for "unknown" (or
+// anything else unexpected) so the UI can show a friendly fallback message
+// instead of crashing.
 export function getFruitInfo(label: FruitLabel): FruitInfo | undefined {
-  if (label === "apple" || label === "banana") {
-    return FRUIT_INFO[label];
-  }
+  if (label === "apple") return FRUIT_INFO.apple;
+  if (label === "banana") return FRUIT_INFO.banana;
   return undefined;
 }

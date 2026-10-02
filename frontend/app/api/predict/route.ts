@@ -1,47 +1,41 @@
 // app/api/predict/route.ts
 //
-// This is a Next.js Route Handler, i.e. a serverless function that runs on
-// Vercel. It acts as a thin proxy between the browser and the real backend
-// model service:
+// This is a Next.js "Route Handler" - a small server-side function that
+// runs on Vercel. It sits between the browser and the real backend:
 //
-//   Browser --(multipart/form-data image)--> /api/predict (this file)
-//                                               --(forwarded image)--> Backend API
-//                                               <--(JSON prediction)----
-//   Browser <--(JSON prediction)-----------------
+//   Browser --(photo)--> this route --(photo)--> Backend API (runs the CNN model)
+//   Browser <--(result)-- this route <--(result)-- Backend API
 //
-// Why proxy instead of calling the backend directly from the browser?
-//   1. CORS: the backend doesn't need to be configured to accept
-//      cross-origin requests from the frontend's domain.
-//   2. Secrecy: BACKEND_API_URL / BACKEND_API_KEY stay server-side only and
-//      are never exposed in client-side JavaScript.
-//   3. Flexibility: we can swap/retire the backend, add retries, add
-//      request logging, or add input validation here without touching the
-//      frontend UI code at all.
+// Why go through our own route instead of calling the backend directly
+// from the browser?
+//   1. CORS: the backend doesn't need extra configuration to accept
+//      requests from our frontend's domain.
+//   2. Secrecy: the backend's URL/key stay on the server and are never
+//      sent to the user's browser.
 //
-// This route deliberately contains NO model code - the actual CNN
-// inference happens in the separate backend service that this project's
-// brief describes ("the backend will be calling an api of the model").
+// This route does NOT contain any CNN/model code - that lives in the
+// separate backend service that the project brief describes.
 
 import { NextRequest, NextResponse } from "next/server";
 import { FruitLabel, PredictionResult } from "@/lib/types";
 
-// Ensure this route always runs dynamically (per-request) rather than being
-// statically optimised, since it depends on the incoming request body.
+// Make sure this route always runs fresh for every request (it depends on
+// the uploaded file in the request body, so it can't be cached).
 export const dynamic = "force-dynamic";
 
-// Basic client-side-mirrored validation, enforced again here because a
-// request could reach this endpoint directly (not just via our own UI).
 const MAX_FILE_SIZE_BYTES = 8 * 1024 * 1024; // 8 MB
 const ALLOWED_MIME_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 export async function POST(request: NextRequest) {
-  // 1. Parse the incoming multipart form data sent by the browser.
+  // 1. Read the uploaded file out of the request. This throws if the
+  // request wasn't sent as multipart/form-data (e.g. no file attached at
+  // all), so we catch that and return a friendly error instead of a crash.
   let formData: FormData;
   try {
     formData = await request.formData();
   } catch {
     return NextResponse.json(
-      { error: "Could not read the uploaded file. Please try again." },
+      { error: "No image file was provided. Please choose a photo to upload." },
       { status: 400 }
     );
   }
@@ -69,114 +63,72 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // 2. DEMO MODE: if explicitly enabled, skip the real backend entirely and
-  // return a plausible mock prediction. This lets the frontend be built,
-  // tested, and demonstrated end-to-end before the model backend exists or
-  // while it's temporarily unavailable - handy for the "suitable student
-  // environment ... for marking and testing purposes" requirement.
+  // 2. DEMO MODE: while the backend/model isn't ready yet, we can return a
+  // random mock result instead of calling it. This lets us build and show
+  // the frontend before the rest of the team is finished.
   if (process.env.NEXT_PUBLIC_DEMO_MODE === "true") {
-    return NextResponse.json(buildMockPrediction());
+    return NextResponse.json(getMockPrediction());
   }
 
-  // 3. Forward the image to the real backend model service.
+  // 3. Otherwise, forward the image to the real backend.
   const backendUrl = process.env.BACKEND_API_URL;
   if (!backendUrl) {
     return NextResponse.json(
       {
         error:
-          "Backend is not configured. Set BACKEND_API_URL in the environment, or enable NEXT_PUBLIC_DEMO_MODE for a demo.",
+          "Backend is not configured. Set BACKEND_API_URL, or turn on NEXT_PUBLIC_DEMO_MODE to test without one.",
       },
       { status: 500 }
     );
   }
 
   const predictPath = process.env.BACKEND_PREDICT_PATH || "/predict";
-  const targetUrl = new URL(predictPath, backendUrl).toString();
 
-  // Re-package the file into a fresh FormData to forward downstream.
-  const forwardBody = new FormData();
-  forwardBody.append("image", file, file.name);
+  // Put the file into a new FormData to send on to the backend.
+  const forwardData = new FormData();
+  forwardData.append("image", file, file.name);
 
+  let backendResponse: Response;
   try {
-    const backendResponse = await fetch(targetUrl, {
+    backendResponse = await fetch(backendUrl + predictPath, {
       method: "POST",
-      body: forwardBody,
-      headers: process.env.BACKEND_API_KEY
-        ? { Authorization: `Bearer ${process.env.BACKEND_API_KEY}` }
-        : undefined,
-      // Avoid hanging forever if the backend/model API stalls.
-      signal: AbortSignal.timeout(20_000),
+      body: forwardData,
     });
-
-    if (!backendResponse.ok) {
-      return NextResponse.json(
-        { error: `Backend returned an error (status ${backendResponse.status}).` },
-        { status: 502 }
-      );
-    }
-
-    const backendJson = await backendResponse.json();
-    const result = normalizeBackendResponse(backendJson);
-
-    if (!result) {
-      return NextResponse.json(
-        { error: "Backend returned an unexpected response format." },
-        { status: 502 }
-      );
-    }
-
-    return NextResponse.json(result);
-  } catch (err) {
-    const isTimeout = err instanceof Error && err.name === "TimeoutError";
+  } catch {
     return NextResponse.json(
-      {
-        error: isTimeout
-          ? "The model backend took too long to respond. Please try again."
-          : "Could not reach the model backend. Please try again shortly.",
-      },
-      { status: 504 }
+      { error: "Could not reach the model backend. Please try again shortly." },
+      { status: 502 }
     );
   }
+
+  if (!backendResponse.ok) {
+    return NextResponse.json(
+      { error: `Backend returned an error (status ${backendResponse.status}).` },
+      { status: 502 }
+    );
+  }
+
+  // 4. The backend should reply with JSON like { "label": "apple", "confidence": 0.94 }.
+  const backendJson = await backendResponse.json();
+  const label = backendJson.label as FruitLabel | undefined;
+  const confidence = backendJson.confidence as number | undefined;
+
+  const isValidLabel = label === "apple" || label === "banana" || label === "unknown";
+  if (!isValidLabel || typeof confidence !== "number") {
+    return NextResponse.json(
+      { error: "Backend returned an unexpected response format." },
+      { status: 502 }
+    );
+  }
+
+  const result: PredictionResult = { label, confidence };
+  return NextResponse.json(result);
 }
 
-/**
- * The backend is a separate service built/owned by the team, so its exact
- * response shape may vary slightly. This function tolerates a few common
- * shapes (e.g. `{ label, confidence }` or `{ class, probability }`) and
- * normalises them into our canonical PredictionResult type. Adjust this if
- * your backend's contract differs.
- */
-function normalizeBackendResponse(json: unknown): PredictionResult | null {
-  if (typeof json !== "object" || json === null) return null;
-  const obj = json as Record<string, unknown>;
-
-  const rawLabel = (obj.label ?? obj.class ?? obj.prediction) as unknown;
-  const rawConfidence = (obj.confidence ?? obj.probability ?? obj.score) as unknown;
-
-  const label = normalizeLabel(rawLabel);
-  const confidence =
-    typeof rawConfidence === "number" ? clamp01(rawConfidence) : 0;
-
-  if (!label) return null;
-  return { label, confidence };
-}
-
-function normalizeLabel(value: unknown): FruitLabel | null {
-  if (typeof value !== "string") return null;
-  const lower = value.toLowerCase().trim();
-  if (lower === "apple" || lower === "banana") return lower;
-  if (lower === "unknown") return "unknown";
-  return null;
-}
-
-function clamp01(n: number): number {
-  if (Number.isNaN(n)) return 0;
-  return Math.min(1, Math.max(0, n));
-}
-
-/** Produces a random-but-plausible mock prediction for demo mode. */
-function buildMockPrediction(): PredictionResult {
+// Returns a random apple/banana result with a plausible confidence score,
+// used only when NEXT_PUBLIC_DEMO_MODE is turned on.
+function getMockPrediction(): PredictionResult {
   const label: FruitLabel = Math.random() > 0.5 ? "apple" : "banana";
-  const confidence = 0.75 + Math.random() * 0.24; // ~0.75-0.99
-  return { label, confidence: Math.round(confidence * 1000) / 1000 };
+  const confidence = Math.round((0.75 + Math.random() * 0.24) * 1000) / 1000;
+  return { label, confidence };
 }
