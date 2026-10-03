@@ -138,11 +138,6 @@ export default function HomePage() {
           </div>
         )}
       </section>
-
-      <footer className="mt-auto pt-6 text-center text-xs text-ink-400">
-        Frontend only - image classification is performed by a separate
-        backend model service. Project 4: CNN Fruit Identification.
-      </footer>
     </main>
   );
 }
