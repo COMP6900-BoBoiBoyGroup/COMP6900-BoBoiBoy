@@ -1,2 +1,0 @@
-﻿// Vercel deployment trigger test
-// trigger redeploy after project rename
