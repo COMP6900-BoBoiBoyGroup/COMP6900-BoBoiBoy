@@ -16,16 +16,16 @@ export default function ConfidenceBar({ confidence }: ConfidenceBarProps) {
     percent >= 80
       ? "bg-brand-500"
       : percent >= 50
-      ? "bg-amber-500"
-      : "bg-red-500";
+      ? "bg-banana-500"
+      : "bg-apple-500";
 
   return (
     <div className="w-full">
-      <div className="mb-1 flex items-center justify-between text-xs font-medium text-slate-500">
+      <div className="mb-1 flex items-center justify-between text-xs font-medium text-ink-500">
         <span>Model confidence</span>
         <span>{percent}%</span>
       </div>
-      <div className="h-2 w-full overflow-hidden rounded-full bg-slate-200">
+      <div className="h-2 w-full overflow-hidden rounded-full border border-ink-200 bg-cream-100">
         <div
           className={`h-full rounded-full ${barColor}`}
           style={{ width: `${percent}%` }}

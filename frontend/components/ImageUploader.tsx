@@ -93,10 +93,10 @@ export default function ImageUploader({
         className={[
           "flex min-h-[260px] w-full cursor-pointer flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed p-6 text-center transition-colors",
           disabled
-            ? "cursor-not-allowed border-slate-200 bg-slate-50 opacity-60"
+            ? "cursor-not-allowed border-ink-200 bg-cream-200 opacity-60"
             : isDragging
             ? "border-brand-500 bg-brand-50"
-            : "border-slate-300 bg-white hover:border-brand-500 hover:bg-brand-50",
+            : "border-ink-300 bg-cream-50 hover:border-brand-500 hover:bg-brand-50",
         ].join(" ")}
       >
         {previewUrl ? (
@@ -112,10 +112,10 @@ export default function ImageUploader({
         ) : (
           <>
             <span className="text-4xl">📷</span>
-            <p className="font-medium text-slate-700">
+            <p className="font-medium text-ink-700">
               Click to choose a photo, or drag one in here
             </p>
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-ink-500">
               An apple or a banana &middot; JPEG, PNG, or WEBP &middot; up to 8 MB
             </p>
           </>
@@ -132,7 +132,7 @@ export default function ImageUploader({
       </div>
 
       {validationError && (
-        <p className="mt-2 text-sm font-medium text-red-600">{validationError}</p>
+        <p className="mt-2 text-sm font-medium text-apple-600">{validationError}</p>
       )}
     </div>
   );

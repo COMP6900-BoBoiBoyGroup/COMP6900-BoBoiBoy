@@ -75,10 +75,11 @@ export default function HomePage() {
   return (
     <main className="mx-auto flex min-h-screen max-w-5xl flex-col gap-8 px-4 py-10 sm:py-14">
       <header className="text-center">
-        <h1 className="text-3xl font-bold text-slate-900 sm:text-4xl">
-          🍎 Fruit Identifier 🍌
+        <h1 className="font-display text-4xl font-semibold tracking-tight text-ink-900 sm:text-5xl">
+          <span className="text-apple-500">🍎</span> Fruit Identifier{" "}
+          <span className="text-banana-500">🍌</span>
         </h1>
-        <p className="mt-2 text-slate-600">
+        <p className="mx-auto mt-3 max-w-xl text-ink-700">
           Upload a photo of an apple or a banana. A trained CNN model will
           identify it and we&apos;ll show you nutrition facts, health
           benefits, ripeness tips, and serving ideas.
@@ -99,10 +100,10 @@ export default function HomePage() {
               onClick={handleIdentify}
               disabled={!canIdentify}
               className={[
-                "flex-1 rounded-xl px-4 py-3 font-semibold text-white shadow-sm transition-colors",
+                "flex-1 rounded-xl border-2 px-4 py-3 font-semibold transition-all",
                 canIdentify
-                  ? "bg-brand-500 hover:bg-brand-600"
-                  : "cursor-not-allowed bg-slate-300",
+                  ? "border-ink-900 bg-brand-500 text-white shadow-[3px_3px_0_0_#2a2015] hover:bg-brand-600 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+                  : "cursor-not-allowed border-ink-300 bg-cream-200 text-ink-500",
               ].join(" ")}
             >
               {status === "loading" ? "Identifying..." : "Identify fruit"}
@@ -112,7 +113,7 @@ export default function HomePage() {
               <button
                 onClick={handleReset}
                 disabled={status === "loading"}
-                className="rounded-xl border border-slate-300 bg-white px-4 py-3 font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-xl border-2 border-ink-900 bg-cream-50 px-4 py-3 font-medium text-ink-800 shadow-[3px_3px_0_0_#2a2015] hover:bg-cream-200 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Reset
               </button>
@@ -130,7 +131,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <footer className="mt-auto pt-6 text-center text-xs text-slate-400">
+      <footer className="mt-auto pt-6 text-center text-xs text-ink-400">
         Frontend only - image classification is performed by a separate
         backend model service. Project 4: CNN Fruit Identification.
       </footer>
