@@ -1,4 +1,4 @@
-# Rindr - Fruit Identifier (Frontend)
+# Fruit Identifier (Frontend)
 
 Frontend web app for **Project 4: CNN Application to Identify a Fruit**.
 

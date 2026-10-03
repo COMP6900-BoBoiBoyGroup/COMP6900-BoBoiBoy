@@ -1,4 +1,4 @@
-# Rindr - CNN Fruit Identification (COMP6900 Project 4)
+# COMP6900 Fruit Identifier
 
 A web app that identifies whether an uploaded photo is an **apple** or a
 **banana** using a trained Convolutional Neural Network, then shows

@@ -1,4 +1,4 @@
-# Root .gitignore for the COMP6900 "Rindr" fruit identification project.
+# Root .gitignore for the COMP6900 fruit identification project.
 # Applies across all subprojects (frontend/, backend/, model/, etc.) added
 # by any team member.
 

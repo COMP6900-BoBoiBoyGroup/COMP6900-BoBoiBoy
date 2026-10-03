@@ -1,5 +1,5 @@
 {
-  "name": "rindr-fruit-id-frontend",
+  "name": "fruit-identifier-frontend",
   "version": "0.1.0",
   "private": true,
   "description": "Frontend web app for Project 4 - CNN Fruit Identification. Lets a user upload a photo of a fruit, forwards it to a backend model API, and displays the identified fruit plus nutrition/health/usage information.",

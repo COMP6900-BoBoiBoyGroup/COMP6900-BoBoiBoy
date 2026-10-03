@@ -76,7 +76,7 @@ export default function HomePage() {
     <main className="mx-auto flex min-h-screen max-w-5xl flex-col gap-8 px-4 py-10 sm:py-14">
       <header className="text-center">
         <h1 className="text-3xl font-bold text-slate-900 sm:text-4xl">
-          🍎 Rindr 🍌
+          🍎 Fruit Identifier 🍌
         </h1>
         <p className="mt-2 text-slate-600">
           Upload a photo of an apple or a banana. A trained CNN model will

@@ -8,7 +8,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Rindr - Fruit Identifier",
+  title: "Fruit Identifier",
   description:
     "Upload a photo of an apple or banana and let a CNN model identify it, then view nutrition, health, and usage information.",
 };
