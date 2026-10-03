@@ -76,8 +76,7 @@ export default function HomePage() {
     <main className="mx-auto flex min-h-screen max-w-5xl flex-col gap-8 px-4 py-10 sm:py-14">
       <header className="text-center">
         <h1 className="font-display text-4xl font-semibold tracking-tight text-ink-900 sm:text-5xl">
-          <span className="text-apple-500">🍎</span> Fruit Identifier{" "}
-          <span className="text-banana-500">🍌</span>
+          Fruit Identifier
         </h1>
         <p className="mx-auto mt-3 max-w-xl text-ink-700">
           Upload a photo of an apple or a banana. A trained CNN model will
@@ -86,7 +85,12 @@ export default function HomePage() {
         </p>
       </header>
 
-      <section className="grid grid-cols-1 gap-6 md:grid-cols-2">
+      <section
+        className={[
+          "grid grid-cols-1 gap-6",
+          status === "idle" ? "mx-auto w-full max-w-xl" : "md:grid-cols-2",
+        ].join(" ")}
+      >
         {/* Left column: upload + controls */}
         <div className="flex flex-col gap-4">
           <ImageUploader
@@ -121,14 +125,18 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Right column: result / fruit info */}
-        <div className="flex flex-col">
-          <ResultPanel
-            status={status}
-            result={result}
-            errorMessage={errorMessage}
-          />
-        </div>
+        {/* Right column: result / fruit info - only shown once there's
+            actually something to display (loading/error/success), not on
+            the initial idle state. */}
+        {status !== "idle" && (
+          <div className="flex flex-col">
+            <ResultPanel
+              status={status}
+              result={result}
+              errorMessage={errorMessage}
+            />
+          </div>
+        )}
       </section>
 
       <footer className="mt-auto pt-6 text-center text-xs text-ink-400">

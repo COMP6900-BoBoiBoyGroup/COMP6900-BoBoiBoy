@@ -17,7 +17,10 @@ import FruitInfoCard from "./FruitInfoCard";
 const CONFIDENCE_THRESHOLD = 0.5;
 
 interface ResultPanelProps {
-  status: "idle" | "loading" | "error" | "success";
+  // The caller (app/page.tsx) only renders this component once the status
+  // is no longer "idle", so this component just needs to handle the three
+  // remaining states.
+  status: "loading" | "error" | "success";
   result: PredictionResult | null;
   errorMessage: string | null;
 }
@@ -27,16 +30,6 @@ export default function ResultPanel({
   result,
   errorMessage,
 }: ResultPanelProps) {
-  if (status === "idle") {
-    return (
-      <EmptyState
-        emoji="🔍"
-        title="No photo analysed yet"
-        description="Upload a photo of an apple or banana and press “Identify fruit” to see the result here."
-      />
-    );
-  }
-
   if (status === "loading") {
     return (
       <EmptyState
