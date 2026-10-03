@@ -21,18 +21,7 @@ dataset/    Training/testing images and dataset notes (TBD - large raw images
             should NOT be committed directly - see dataset/README.md once added)
 ```
 
-> Only `frontend/` exists so far. `backend/`, `model/`, and `dataset/` are
-> expected to be added by other team members - please add a short
-> `README.md` inside each new folder explaining what it contains and how
-> to run/reproduce it, per the project brief's requirement that all code be
-> documented.
-
 ## Frontend
-
-See [`frontend/README.md`](frontend/README.md) for full details: tech
-stack, local setup, the frontend ↔ backend API contract, and how to deploy
-to Vercel from this monorepo (including the required Vercel "Root
-Directory" setting).
 
 Quick start:
 
@@ -51,9 +40,8 @@ npm run dev
   `*-ci.yml` workflow (e.g. `backend-ci.yml`, `model-ci.yml`) scoped the
   same way with a `paths` filter, so everyone's checks stay independent.
 - **CD:** Vercel is connected directly to this GitHub repo and auto-deploys
-  `frontend/` on every push to `main` (with Preview Deployments for PRs).
-  See [`frontend/README.md`](frontend/README.md#deployment-vercel--git-cicd)
-  for the one-time setup steps.
+  `frontend/` on every push to `main` (with Preview Deployments for PRs),
+  with Root Directory set to `frontend` in the Vercel project settings.
 
 ## Project brief checklist
 
