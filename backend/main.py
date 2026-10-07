@@ -7,6 +7,6 @@ def read_root():
     return {"Hello":"world"}
 
 @app.post("/predict")
-def predict_fruit(file: UploadFile):
-    print("Predicting fruit from file: " + file.filename)
-    return {"label":"pineapple","confidence": 0.94}
+def predict_fruit(image: UploadFile):
+    print("Predicting fruit from file: " + image.filename)
+    return {"label":"apple","confidence": 0.94}
