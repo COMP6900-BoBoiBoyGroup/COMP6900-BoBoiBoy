@@ -1,0 +1,5 @@
+# Packages require to run model_inference.py
+numpy>=1.18,<2.4
+Pillow>=11.3.0
+torch>=2.5
+torchvision>=0.20
