@@ -72,7 +72,7 @@ class CustomFruitCNN(nn.Module):
     return self.classifier(x)
 
 # Model configuration and initialisation
-BEST_CKPT = "/weights/best_custom_cnn.pth"
+BEST_CKPT = "model/weights/best_custom_cnn.pth"
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Load metadata from the model checkpoint
