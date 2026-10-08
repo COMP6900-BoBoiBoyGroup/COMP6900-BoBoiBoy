@@ -1,4 +1,5 @@
 from fastapi import FastAPI, File, UploadFile
+from ..model.model_inference import predict_image
 
 app = FastAPI()
 
@@ -8,5 +9,5 @@ def read_root():
 
 @app.post("/predict")
 def predict_fruit(image: UploadFile):
-    print("Predicting fruit from file: " + image.filename)
+    print("Predicting fruit from file: " + image.file.name)
     return {"label":"apple","confidence": 0.94}
