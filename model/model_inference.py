@@ -1,3 +1,6 @@
+# Extra libraries for backend
+import os
+
 # Import required libraries
 import torch
 import torch.nn as nn
@@ -71,8 +74,15 @@ class CustomFruitCNN(nn.Module):
     x = self.features(x)
     return self.classifier(x)
 
+# Check current working directory is in /model. Otherwise, change it
+original_cwd = ""
+if (os.getcwd()[-5:] != "model"):
+    original_cwd = os.getcwd()
+    os.chdir("../model")  
+    # The original cwd is saved, to change back to it later
+
 # Model configuration and initialisation
-BEST_CKPT = "model/weights/best_custom_cnn.pth"
+BEST_CKPT = "weights/best_custom_cnn.pth"
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Load metadata from the model checkpoint
@@ -101,6 +111,10 @@ inference_transform = transforms.Compose(
         transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
     ]
 )
+
+# If the original_cwd is set, then change back to it
+if (original_cwd != ""):
+    os.chdir(original_cwd)
 
 # Prediction function
 def predict_image(image_path: str, conf_threshold: float = 0.90, energy_threshold: float = -4.7):
