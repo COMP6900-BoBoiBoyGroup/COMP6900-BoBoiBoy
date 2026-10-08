@@ -32,6 +32,24 @@ cp .env.example .env.local   # set NEXT_PUBLIC_DEMO_MODE=true to try it without 
 npm run dev
 ```
 
+## Backend
+
+Optionally, create and activate a python virtual environment for the backend in the backend directory.
+Depending on your environment, you may need to instead use `python3` and `pip3` for the following commands
+
+```bash
+cd backend // If not already in the directory
+python -m venv .venv
+source .venv/bin/activate
+```
+
+Then, install the requirements for the model and fastapi
+```bash
+pip install -r ../model/requirements.txt
+pip install "fastapi[standard]"
+```
+Finally, the backend can be runned using `fastapi dev`.
+
 ## CI/CD
 
 - **CI:** [`.github/workflows/frontend-ci.yml`](.github/workflows/frontend-ci.yml)
