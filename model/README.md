@@ -34,7 +34,7 @@ python -c "from model.model_inference import perdict_image; print(predict_image(
 | --- | ------- |
 | `Status` | `apple`, `banana`, or `Unknown / Neither Apple or Banana` |
 | `Top Probability` | Softmax probability of the wining class|
-| `Energy Score` |  \(-\mathrm{logsumexp}(\mathrm{logits})\). More negative means the image looks more like the training distribution|
+| `Energy Score` |  \(-\mathrm{logsumexp}(\mathrm{logits})\. More negative means the image looks more like the training distribution|
 | `Detailed Probabilities` | Per-class softmax percentages|
 
 A prediction is accepted only when the probability is at least **0.90** and the energy score is at most **-4.7**. Anything esle is lablled unknown. Those defaults are the arguments `conf_threshold` and `energy_threshold`.
