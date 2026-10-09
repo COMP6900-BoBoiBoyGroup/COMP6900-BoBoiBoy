@@ -74,15 +74,14 @@ class CustomFruitCNN(nn.Module):
     x = self.features(x)
     return self.classifier(x)
 
-# Check current working directory is in /model. Otherwise, change it
-original_cwd = ""
-if (os.getcwd()[-5:] != "model"):
-    original_cwd = os.getcwd()
-    os.chdir("../model")  
-    # The original cwd is saved, to change back to it later
-
-# Model configuration and initialisation
-BEST_CKPT = "weights/best_custom_cnn.pth"
+# Model configuration and initialisation. The checkpoint path is built
+# from this file's own location rather than the process's current working
+# directory - os.chdir()-based relative paths break depending on where the
+# server is started from (e.g. a deployment host's working directory is
+# usually the repo root, not model/), so an absolute path here is more
+# portable and works the same everywhere.
+MODEL_DIR = os.path.dirname(os.path.abspath(__file__))
+BEST_CKPT = os.path.join(MODEL_DIR, "weights", "best_custom_cnn.pth")
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Load metadata from the model checkpoint
@@ -111,10 +110,6 @@ inference_transform = transforms.Compose(
         transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
     ]
 )
-
-# If the original_cwd is set, then change back to it
-if (original_cwd != ""):
-    os.chdir(original_cwd)
 
 # Prediction function
 def predict_image(image_path: str, conf_threshold: float = 0.90, energy_threshold: float = -4.7):
