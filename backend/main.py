@@ -1,5 +1,5 @@
 from fastapi import FastAPI, File, UploadFile
-from ..model.model_inference import predict_image
+from model.model_inference import predict_image
 
 app = FastAPI()
 

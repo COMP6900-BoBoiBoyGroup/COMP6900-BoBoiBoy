@@ -1,0 +1,8 @@
+# Python dependencies for deploying backend/main.py as a Vercel Python
+# Serverless Function (see api/index.py). Mirrors model/requirement.txt
+# plus fastapi itself, which the backend needs to define its routes.
+fastapi
+numpy>=1.18,<2.4
+Pillow>=11.3.0
+torch>=2.5
+torchvision>=0.20

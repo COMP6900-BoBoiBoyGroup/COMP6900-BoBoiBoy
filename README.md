@@ -34,21 +34,29 @@ npm run dev
 
 ## Backend
 
-Optionally, create and activate a python virtual environment for the backend in the backend directory.
-Depending on your environment, you may need to instead use `python3` and `pip3` for the following commands
+Run these commands from the **repo root** (not inside `backend/`) - the
+backend imports from the sibling `model/` folder, so Python needs to be
+run with the repo root as the working directory for that import to work.
+
+Optionally, create and activate a python virtual environment first.
+Depending on your environment, you may need to instead use `python3` and
+`pip3` for the following commands.
 
 ```bash
-cd backend // If not already in the directory
 python -m venv .venv
-source .venv/bin/activate
+source .venv/bin/activate   # on Windows: .venv\Scripts\activate
 ```
 
-Then, install the requirements for the model and fastapi
+Then, install the requirements for the model and fastapi:
 ```bash
-pip install -r ../model/requirements.txt
+pip install -r model/requirement.txt
 pip install "fastapi[standard]"
 ```
-Finally, the backend can be runned using `fastapi dev`.
+
+Finally, run the backend with:
+```bash
+uvicorn backend.main:app --reload
+```
 
 ## CI/CD
 
