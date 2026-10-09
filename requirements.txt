@@ -1,6 +1,13 @@
 # Python dependencies for deploying backend/main.py as a Vercel Python
 # Serverless Function (see api/index.py). Mirrors model/requirement.txt
 # plus fastapi itself, which the backend needs to define its routes.
+#
+# IMPORTANT: this installs the CPU-only build of torch/torchvision (via
+# the extra index below) instead of the default PyPI build, which bundles
+# several GB of GPU/CUDA libraries we don't need for simple CNN inference.
+# Without this, the deployment bundle is ~5 GB and fails Vercel's 500 MB
+# function size limit.
+--extra-index-url https://download.pytorch.org/whl/cpu
 fastapi
 numpy>=1.18,<2.4
 Pillow>=11.3.0
