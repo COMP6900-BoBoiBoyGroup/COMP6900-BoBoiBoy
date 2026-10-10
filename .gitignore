@@ -11,7 +11,7 @@
 **/*.tsbuildinfo
 **/next-env.d.ts
 
-# Python (model training / backend, if Python-based)
+# Python (model training / backend)
 **/__pycache__/
 **/*.pyc
 **/*.pyo
@@ -19,6 +19,16 @@
 **/venv/
 **/env/
 **/*.egg-info/
+
+# Jupyter notebook checkpoints (model/scripts/*.ipynb creates these locally)
+**/.ipynb_checkpoints/
+
+# Model checkpoints - don't let teammates accidentally commit large
+# experiment weights from local training runs. The one official checkpoint
+# the app actually uses is explicitly allow-listed below.
+**/*.pth
+**/*.pt
+!model/weights/best_custom_cnn.pth
 
 # Vercel
 **/.vercel
@@ -39,6 +49,9 @@
 **/dataset/**/*.jpg
 **/dataset/**/*.jpeg
 **/dataset/**/*.png
+
+# Logs (e.g. from local dev servers)
+**/*.log
 
 # OS / editor
 .DS_Store
