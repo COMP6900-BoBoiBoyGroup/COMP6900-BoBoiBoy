@@ -1,7 +1,8 @@
 // tailwind.config.ts
 //
-// Tailwind CSS configuration. We scan the `app` and `components` folders
-// for class names so unused styles are purged from the production build.
+// This is where Tailwind is set up. The "content" list below tells
+// Tailwind which folders to scan for class names, so it only keeps the
+// styles we actually use in the final build.
 import type { Config } from "tailwindcss";
 
 const config: Config = {
@@ -12,15 +13,16 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Warm, fruit-inspired palette (replaces the generic slate/indigo
-        // "default AI app" look with something that feels intentional).
+        // This is our colour palette - warm cream/brown/green tones
+        // instead of the usual grey/blue colours most sites use.
         cream: {
-          50: "#fffcf3", // card backgrounds
-          100: "#f7eedc", // page background
+          50: "#fffcf3", // used for card backgrounds
+          100: "#f7eedc", // used for the page background
           200: "#eee0c4",
         },
         ink: {
-          // Warm charcoal/brown used instead of grey "slate" tones.
+          // These are our "text and border" colours - a warm brown
+          // instead of plain grey.
           200: "#e3d7c3",
           300: "#cdbda1",
           400: "#9c8a74",
@@ -30,7 +32,7 @@ const config: Config = {
           900: "#2a2015",
         },
         brand: {
-          // Forest green - primary buttons / accents.
+          // Green - used for the main button and the "success" state.
           50: "#eef5ea",
           100: "#d9e9cf",
           500: "#4b8f52",
@@ -38,21 +40,21 @@ const config: Config = {
           700: "#2c5c32",
         },
         apple: {
-          // Warm red, used for the "apple" accent and confidence states.
+          // Red - used for the apple accent colour and for error messages.
           50: "#fbeae5",
           500: "#c5533a",
           600: "#a8422c",
         },
         banana: {
-          // Banana yellow, used as a secondary accent.
+          // Yellow - used for the banana accent colour and warning messages.
           50: "#fdf2d9",
           500: "#e3a52f",
           600: "#c68c1f",
         },
       },
       fontFamily: {
-        // Rounded, friendly display font for headings; body text keeps the
-        // system sans stack for easy reading.
+        // This is the heading font (set up in app/layout.tsx). Body text
+        // just uses the normal system font, so this is only used for titles.
         display: ["var(--font-display)", "ui-rounded", "sans-serif"],
       },
     },

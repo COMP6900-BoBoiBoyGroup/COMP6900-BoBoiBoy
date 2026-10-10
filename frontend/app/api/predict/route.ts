@@ -1,35 +1,37 @@
 // app/api/predict/route.ts
 //
-// This is a Next.js "Route Handler" - a small server-side function that
-// runs on Vercel. It sits between the browser and the real backend:
+// This file is a Next.js "Route Handler" - basically a small server
+// function that runs on Vercel. It sits in between the browser and the
+// real backend, like this:
 //
-//   Browser --(photo)--> this route --(photo)--> Backend API (runs the CNN model)
-//   Browser <--(result)-- this route <--(result)-- Backend API
+//   Browser --(photo)--> this route --(photo)--> Backend (runs the model)
+//   Browser <--(result)-- this route <--(result)-- Backend
 //
-// Why go through our own route instead of calling the backend directly
-// from the browser?
-//   1. CORS: the backend doesn't need extra configuration to accept
-//      requests from our frontend's domain.
-//   2. Secrecy: the backend's URL/key stay on the server and are never
-//      sent to the user's browser.
+// We go through our own route instead of calling the backend directly
+// from the browser for two reasons:
+//   1. It avoids CORS problems, since the backend doesn't need to be set
+//      up to accept requests coming from our frontend's domain.
+//   2. It keeps the backend's URL hidden from the browser instead of
+//      exposing it to anyone who opens the dev tools.
 //
-// This route does NOT contain any CNN/model code - that lives in the
-// separate backend service that the project brief describes.
+// This file does NOT contain any CNN/model code - that all lives in the
+// separate backend service.
 
 import { NextRequest, NextResponse } from "next/server";
 import { FruitLabel, PredictionResult } from "@/lib/types";
 
-// Make sure this route always runs fresh for every request (it depends on
-// the uploaded file in the request body, so it can't be cached).
+// This tells Next.js to never cache this route - every request has a
+// different uploaded photo, so caching wouldn't make sense here.
 export const dynamic = "force-dynamic";
 
 const MAX_FILE_SIZE_BYTES = 8 * 1024 * 1024; // 8 MB
 const ALLOWED_MIME_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 export async function POST(request: NextRequest) {
-  // 1. Read the uploaded file out of the request. This throws if the
-  // request wasn't sent as multipart/form-data (e.g. no file attached at
-  // all), so we catch that and return a friendly error instead of a crash.
+  // Step 1: read the uploaded file out of the request. This throws if the
+  // request wasn't actually sent as multipart/form-data (e.g. no file was
+  // attached), so we catch that and return a normal error response
+  // instead of letting it crash.
   let formData: FormData;
   try {
     formData = await request.formData();
@@ -63,14 +65,14 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // 2. DEMO MODE: while the backend/model isn't ready yet, we can return a
-  // random mock result instead of calling it. This lets us build and show
-  // the frontend before the rest of the team is finished.
+  // Step 2: demo mode. If this is turned on, we skip the real backend
+  // completely and just send back a random fake result. This is handy
+  // for trying out the frontend before the backend is ready or deployed.
   if (process.env.NEXT_PUBLIC_DEMO_MODE === "true") {
     return NextResponse.json(getMockPrediction());
   }
 
-  // 3. Otherwise, forward the image to the real backend.
+  // Step 3: otherwise, send the photo on to the real backend.
   const backendUrl = process.env.BACKEND_API_URL;
   if (!backendUrl) {
     return NextResponse.json(
@@ -84,7 +86,7 @@ export async function POST(request: NextRequest) {
 
   const predictPath = process.env.BACKEND_PREDICT_PATH || "/predict";
 
-  // Put the file into a new FormData to send on to the backend.
+  // Build a new FormData to forward the file on to the backend.
   const forwardData = new FormData();
   forwardData.append("image", file, file.name);
 
@@ -95,6 +97,7 @@ export async function POST(request: NextRequest) {
       body: forwardData,
     });
   } catch {
+    // This happens if the backend is down or unreachable.
     return NextResponse.json(
       { error: "Could not reach the model backend. Please try again shortly." },
       { status: 502 }
@@ -108,7 +111,9 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // 4. The backend should reply with JSON like { "label": "apple", "confidence": 0.94 }.
+  // Step 4: the backend should send back JSON like
+  // { "label": "apple", "confidence": 0.94 }. We double check it actually
+  // looks like that before trusting it and passing it on to the browser.
   const backendJson = await backendResponse.json();
   const label = backendJson.label as FruitLabel | undefined;
   const confidence = backendJson.confidence as number | undefined;
@@ -125,8 +130,8 @@ export async function POST(request: NextRequest) {
   return NextResponse.json(result);
 }
 
-// Returns a random apple/banana result with a plausible confidence score,
-// used only when NEXT_PUBLIC_DEMO_MODE is turned on.
+// This just makes up a random apple/banana result with a believable
+// confidence score. It's only ever used when NEXT_PUBLIC_DEMO_MODE is on.
 function getMockPrediction(): PredictionResult {
   const label: FruitLabel = Math.random() > 0.5 ? "apple" : "banana";
   const confidence = Math.round((0.75 + Math.random() * 0.24) * 1000) / 1000;

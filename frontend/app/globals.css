@@ -1,14 +1,14 @@
 /* app/globals.css
  *
- * Global styles. We rely almost entirely on Tailwind utility classes in
- * components, so this file just wires up Tailwind's base/components/utilities
- * layers plus a couple of small global tweaks.
+ * This file loads Tailwind's base styles and adds a couple of small
+ * global tweaks. Almost everything else in this project is styled with
+ * Tailwind utility classes directly inside each component.
  */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Smooth transitions for interactive elements across the app. */
+/* Makes buttons and links fade/slide smoothly instead of changing instantly. */
 button,
 a {
   transition: all 150ms ease-in-out;

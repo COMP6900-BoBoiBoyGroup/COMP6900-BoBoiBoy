@@ -1,22 +1,22 @@
 // app/layout.tsx
 //
-// Root layout for the Next.js App Router. Every page is rendered inside
-// this shell, so this is where we set up global <html>/<body> structure,
-// page metadata (title/description shown in browser tabs & link previews),
-// the display font, and import the global stylesheet.
+// This is the root layout for the app. Next.js wraps every page in this
+// file, so this is where we set up the <html>/<body> tags, the page title
+// and description shown in the browser tab, the font, and the global CSS.
 import type { Metadata } from "next";
 import { Fredoka } from "next/font/google";
 import "./globals.css";
 
-// A rounded, friendly heading font (used for titles only, via the
-// --font-display CSS variable set up in tailwind.config.ts). Body text
-// still uses the default system sans font for easy reading.
+// This loads a rounded, friendly-looking font we use for headings only.
+// It gets stored in a CSS variable called --font-display (set up in
+// tailwind.config.ts), so body text can keep using the normal system font.
 const displayFont = Fredoka({
   subsets: ["latin"],
   weight: ["500", "600", "700"],
   variable: "--font-display",
 });
 
+// This is the tab title and description shown by the browser / search engines.
 export const metadata: Metadata = {
   title: "Fruit Identifier",
   description:

@@ -1,17 +1,19 @@
 // components/ConfidenceBar.tsx
 //
-// Small presentational component that renders the model's confidence score
-// (0-1) as a horizontal progress bar plus a percentage label. Kept generic
-// (no fruit-specific logic) so it's easy to reuse if more classes are added
-// later as a stretch goal.
+// This component just draws a progress bar showing how confident the
+// model is, plus the percentage as text. It doesn't know anything about
+// apples or bananas specifically, so it could be reused for any score.
 
 interface ConfidenceBarProps {
-  confidence: number; // 0..1
+  confidence: number; // a number from 0 to 1
 }
 
 export default function ConfidenceBar({ confidence }: ConfidenceBarProps) {
+  // Turn the 0-1 confidence number into a whole percentage, e.g. 0.834 -> 83.
   const percent = Math.round(confidence * 100);
 
+  // Pick the bar colour based on how confident the result is: green for
+  // high, yellow for medium, red for low.
   const barColor =
     percent >= 80
       ? "bg-brand-500"

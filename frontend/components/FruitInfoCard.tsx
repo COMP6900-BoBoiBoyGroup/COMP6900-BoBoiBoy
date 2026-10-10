@@ -1,10 +1,9 @@
 // components/FruitInfoCard.tsx
 //
-// Renders the educational content for an identified fruit: nutrition
-// facts, health benefits, ripeness tips, and usage/serving ideas. This
-// directly fulfils requirement (4) of the Project 4 brief. The component
-// receives a fully-resolved FruitInfo object (see lib/fruitInfo.ts) rather
-// than fetching anything itself, so it stays simple and easily testable.
+// This component shows all the info about an identified fruit: nutrition
+// facts, health benefits, ripeness tips, and usage ideas. It just takes
+// a FruitInfo object (see lib/fruitInfo.ts) and lays it out - it doesn't
+// fetch or look up anything itself.
 
 import { FruitInfo } from "@/lib/types";
 
@@ -56,6 +55,9 @@ export default function FruitInfoCard({ info }: FruitInfoCardProps) {
   );
 }
 
+// Small helper used for each block below (Nutrition, Health benefits,
+// etc.) - just a title plus whatever's inside, with a line underneath
+// unless it's the last section.
 function Section({
   title,
   children,
@@ -75,6 +77,7 @@ function Section({
   );
 }
 
+// Small helper that turns a list of strings into a bullet-point list.
 function BulletList({ items }: { items: string[] }) {
   return (
     <ul className="list-inside list-disc space-y-1 text-sm text-ink-700">

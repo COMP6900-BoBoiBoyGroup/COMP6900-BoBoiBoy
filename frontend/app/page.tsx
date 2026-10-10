@@ -2,17 +2,13 @@
 
 // app/page.tsx
 //
-// Main (and only) page of the app. It keeps track of what step the user is
-// on (idle -> loading -> success/error) and connects the three main parts
-// of the UI together:
-//   1. ImageUploader   - lets the user choose a photo (brief requirement 3)
-//   2. The "Identify fruit" button - sends the photo to lib/api.ts, which
-//      calls our /api/predict route
-//   3. ResultPanel     - shows the identified fruit + nutrition/health/
-//      ripeness/usage info (brief requirement 4)
+// This is the only page in the app. It has three jobs:
+//   1. Hold the state for what step we're on (idle, loading, success, error)
+//   2. Let the user pick a photo (using the ImageUploader component)
+//   3. Send that photo off and show the result (using the ResultPanel component)
 //
-// State is kept with plain useState hooks since this is a single page with
-// a simple, linear flow - there's no need for a global state library here.
+// We just use plain useState hooks here because the page is simple and
+// linear - there's no need for anything fancier like Redux or Context.
 
 import { useState } from "react";
 import ImageUploader from "@/components/ImageUploader";
@@ -20,27 +16,32 @@ import ResultPanel from "@/components/ResultPanel";
 import { identifyFruit } from "@/lib/api";
 import { PredictionResult } from "@/lib/types";
 
-// The possible stages the page can be in.
+// This type lists every stage the page can be in.
 type Status = "idle" | "loading" | "error" | "success";
 
 export default function HomePage() {
+  // selectedFile holds the actual photo the user picked (or null if none yet).
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  // previewUrl holds a temporary browser URL so we can show the photo on screen.
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  // status holds which stage we're currently in (see the Status type above).
   const [status, setStatus] = useState<Status>("idle");
+  // result holds the prediction we got back once a photo has been identified.
   const [result, setResult] = useState<PredictionResult | null>(null);
+  // errorMessage holds a message to show the user if something went wrong.
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Called by ImageUploader when the user picks a new photo.
+  // This runs when the user picks or drops a new photo.
   function handleFileSelected(file: File, url: string) {
     setSelectedFile(file);
     setPreviewUrl(url);
-    // Picking a new photo clears any previous result.
+    // A new photo means we should forget about any old result.
     setStatus("idle");
     setResult(null);
     setErrorMessage(null);
   }
 
-  // Called when the user clicks "Identify fruit".
+  // This runs when the user clicks the "Identify fruit" button.
   async function handleIdentify() {
     if (!selectedFile) return;
 
@@ -61,7 +62,8 @@ export default function HomePage() {
     }
   }
 
-  // Clears everything so the user can start over with a new photo.
+  // This runs when the user clicks "Reset" - it wipes everything so they
+  // can start over with a new photo.
   function handleReset() {
     setSelectedFile(null);
     setPreviewUrl(null);
@@ -70,6 +72,8 @@ export default function HomePage() {
     setErrorMessage(null);
   }
 
+  // The "Identify fruit" button should only be clickable if we have a
+  // photo picked and we're not already waiting on a request.
   const canIdentify = selectedFile !== null && status !== "loading";
 
   return (
@@ -91,7 +95,7 @@ export default function HomePage() {
           status === "idle" ? "mx-auto w-full max-w-xl" : "md:grid-cols-2",
         ].join(" ")}
       >
-        {/* Left column: upload + controls */}
+        {/* Left side: the upload box and the two buttons underneath it */}
         <div className="flex flex-col gap-4">
           <ImageUploader
             onFileSelected={handleFileSelected}
@@ -125,9 +129,9 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Right column: result / fruit info - only shown once there's
-            actually something to display (loading/error/success), not on
-            the initial idle state. */}
+        {/* Right side: the result. We only show this once there's actually
+            something to show (loading, error, or success) - not when the
+            page first loads and nothing has happened yet. */}
         {status !== "idle" && (
           <div className="flex flex-col">
             <ResultPanel

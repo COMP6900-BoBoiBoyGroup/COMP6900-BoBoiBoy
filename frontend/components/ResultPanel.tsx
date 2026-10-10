@@ -1,25 +1,24 @@
 // components/ResultPanel.tsx
 //
-// Decides what to render for a given app "state": loading, error, an
-// unrecognised/low-confidence result, or a successful identification (in
-// which case it renders the fruit's name/confidence plus the full
-// FruitInfoCard). Centralising this branching logic here keeps
-// app/page.tsx focused on orchestration rather than presentation.
+// This component looks at the current status (loading, error, or
+// success) and decides what to show on the right side of the page: a
+// loading message, an error message, a "couldn't tell" message, or the
+// full result with the fruit's info card.
 
 import { PredictionResult } from "@/lib/types";
 import { getFruitInfo } from "@/lib/fruitInfo";
 import ConfidenceBar from "./ConfidenceBar";
 import FruitInfoCard from "./FruitInfoCard";
 
-// Below this confidence threshold we treat a result as "not confident
-// enough" even if the backend technically returned apple/banana, since a
-// low-confidence guess could easily be wrong and might mislead the user.
+// If the model's confidence is below this number, we treat the result as
+// "not sure enough" even if it technically guessed apple or banana - a
+// low-confidence guess could easily be wrong, so we don't want to mislead
+// the user.
 const CONFIDENCE_THRESHOLD = 0.5;
 
 interface ResultPanelProps {
-  // The caller (app/page.tsx) only renders this component once the status
-  // is no longer "idle", so this component just needs to handle the three
-  // remaining states.
+  // app/page.tsx only renders this component once status isn't "idle"
+  // anymore, so this component only needs to handle these three states.
   status: "loading" | "error" | "success";
   result: PredictionResult | null;
   errorMessage: string | null;
@@ -53,9 +52,11 @@ export default function ResultPanel({
     );
   }
 
-  // status === "success" from here on.
+  // From here on, status is "success".
   if (!result) return null;
 
+  // We only trust the result if the label isn't "unknown" and the
+  // confidence is high enough.
   const isConfident =
     result.label !== "unknown" && result.confidence >= CONFIDENCE_THRESHOLD;
   const info = isConfident ? getFruitInfo(result.label) : undefined;
@@ -95,6 +96,8 @@ export default function ResultPanel({
   );
 }
 
+// This is a small helper used for the loading/empty states above - just
+// an emoji, a title, and a short description, centred in a box.
 function EmptyState({
   emoji,
   title,

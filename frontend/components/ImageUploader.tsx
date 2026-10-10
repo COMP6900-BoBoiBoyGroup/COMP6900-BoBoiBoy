@@ -2,29 +2,29 @@
 
 // components/ImageUploader.tsx
 //
-// Handles the "upload a photo" part of the brief's requirement (3). It
-// supports both a traditional file picker (click) and drag-and-drop, shows
-// a live preview of the chosen image, and performs lightweight client-side
-// validation (file type/size) before the parent component ever tries to
-// send the file to the backend.
+// This component is the "upload a photo" box. It lets the user either
+// click to pick a file, or drag and drop one in, shows a preview of the
+// chosen photo, and checks the file type/size before handing it back to
+// the parent page.
 //
-// This component is intentionally "dumb": it only deals with picking a
-// file and previewing it. The actual network request lives in lib/api.ts
-// and is triggered by the parent (app/page.tsx), which keeps this
-// component easy to reuse/test in isolation.
+// This component doesn't send anything over the network itself - it just
+// picks the file and hands it to the parent (app/page.tsx), which decides
+// what to do with it. That keeps this component simple and easy to test
+// on its own.
 
 import { ChangeEvent, DragEvent, useRef, useState } from "react";
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
-const MAX_SIZE_BYTES = 8 * 1024 * 1024; // 8 MB - mirrors the server-side check
+const MAX_SIZE_BYTES = 8 * 1024 * 1024; // 8 MB - same limit the server checks too
 
 interface ImageUploaderProps {
-  /** Called with a valid File once the user selects/drops one. */
+  /** This runs with the chosen file once the user picks/drops a valid one. */
   onFileSelected: (file: File, previewUrl: string) => void;
-  /** Disables interaction while a prediction request is in flight. */
+  /** Set to true to stop the user from picking a new file (e.g. while loading). */
   disabled?: boolean;
-  /** Current preview image URL, if any (lifted up to the parent so it can
-   * be cleared/reset alongside prediction state). */
+  /** The preview image to show, if one has been picked already. This is
+   * passed down from the parent so it can be cleared together with the
+   * rest of the page's state when the user hits Reset. */
   previewUrl: string | null;
 }
 
@@ -34,12 +34,13 @@ export default function ImageUploader({
   previewUrl,
 }: ImageUploaderProps) {
   const inputRef = useRef<HTMLInputElement>(null);
+  // isDragging is true while the user is dragging a file over the box.
   const [isDragging, setIsDragging] = useState(false);
+  // validationError holds a message if the chosen file isn't allowed.
   const [validationError, setValidationError] = useState<string | null>(null);
 
-  // Checks the chosen file is a supported image type/size, then passes it
-  // up to the parent component (app/page.tsx) along with a local preview
-  // URL so it can show a thumbnail without any network request.
+  // This checks that the file is a type/size we accept, and if so, hands
+  // it (plus a local preview URL) up to the parent component.
   function validateAndEmit(file: File | undefined | null) {
     if (!file) return;
 
@@ -59,8 +60,9 @@ export default function ImageUploader({
 
   function handleInputChange(e: ChangeEvent<HTMLInputElement>) {
     validateAndEmit(e.target.files?.[0]);
-    // Reset the input value so selecting the *same* file again still fires
-    // a change event (otherwise browsers won't re-trigger onChange).
+    // We clear the input's value here so that choosing the exact same
+    // file again still triggers this function (browsers skip onChange if
+    // the value hasn't changed otherwise).
     e.target.value = "";
   }
 
@@ -100,9 +102,9 @@ export default function ImageUploader({
         ].join(" ")}
       >
         {previewUrl ? (
-          // Plain <img> is used (not next/image) because this is a
-          // transient, client-generated blob URL rather than a static or
-          // remote asset - next/image's optimiser doesn't apply here.
+          // We use a plain <img> here instead of next/image because this
+          // is just a temporary blob URL from the user's own browser, not
+          // a real image file next/image could optimise.
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={previewUrl}

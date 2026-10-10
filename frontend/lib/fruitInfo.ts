@@ -1,19 +1,17 @@
 // lib/fruitInfo.ts
 //
-// Static "knowledge base" of fruit information, keyed by the labels our
-// CNN model can produce. This satisfies requirement (4) of the Project 4
-// brief: once a fruit is identified, show nutrition/health info, ripeness
-// tips, and usage/serving suggestions.
+// This file just holds the nutrition/health/ripeness/usage text for each
+// fruit, written out by hand as a plain object. We don't fetch this from
+// anywhere - the model only tells us "apple" or "banana", and we look up
+// the matching info here. This content barely ever changes, so there's no
+// need for a database or an API call just to show it.
 //
-// Design note: this is deliberately a plain TypeScript object (not fetched
-// from an external API) so the content loads instantly and the frontend has
-// no extra dependency for something that rarely changes. Adding a new fruit
-// as a stretch goal later is as simple as adding another entry here and
-// extending the FruitLabel type in lib/types.ts.
+// To add another fruit later, add a new entry below and also add the
+// label to the FruitLabel type in lib/types.ts.
 
 import { FruitInfo, FruitLabel } from "./types";
 
-// A simple lookup object with one entry per fruit we support.
+// This holds one entry per fruit we support, keyed by its label.
 export const FRUIT_INFO: { apple: FruitInfo; banana: FruitInfo } = {
   apple: {
     displayName: "Apple",
@@ -83,9 +81,9 @@ export const FRUIT_INFO: { apple: FruitInfo; banana: FruitInfo } = {
   },
 };
 
-// Looks up the info for a given label. Returns undefined for "unknown" (or
-// anything else unexpected) so the UI can show a friendly fallback message
-// instead of crashing.
+// This looks up the info for a given label. It returns undefined for
+// "unknown" (or anything else unexpected), so the UI can show a friendly
+// fallback message instead of breaking.
 export function getFruitInfo(label: FruitLabel): FruitInfo | undefined {
   if (label === "apple") return FRUIT_INFO.apple;
   if (label === "banana") return FRUIT_INFO.banana;
