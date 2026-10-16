@@ -29,6 +29,7 @@
 **/*.pth
 **/*.pt
 !model/weights/best_custom_cnn.pth
+!model/weights/best_resnet18.pth
 
 # Vercel
 **/.vercel
