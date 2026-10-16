@@ -127,11 +127,11 @@ def predict_image(image_path: str, conf_threshold: float = 0.90, energy_threshol
     top_prob = top_prob.item()
     pred_idx = pred_idx.item()
   # Determine the result label based on confidence and energy thresholds
-  if top_prob < conf_threshold or energy > energy_threshold:
-    result_label = "Unknown / Neither Apple or Banana"
-  else:
+  #if top_prob < conf_threshold or energy > energy_threshold:
+  #  result_label = "Unknown / Neither Apple or Banana"
+  #else:
+  #  result_label = classes[pred_idx]`
     result_label = classes[pred_idx]
-
 # Display results in console
   results = {
       "Status": result_label,
