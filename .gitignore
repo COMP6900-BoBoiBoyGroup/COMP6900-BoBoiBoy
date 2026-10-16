@@ -30,6 +30,7 @@
 **/*.pt
 !model/weights/best_custom_cnn.pth
 !model/weights/best_resnet18.pth
+!model/weights/resnet18_banana_ripeness.pth
 
 # Vercel
 **/.vercel
