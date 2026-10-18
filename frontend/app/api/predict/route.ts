@@ -18,7 +18,14 @@
 // separate backend service.
 
 import { NextRequest, NextResponse } from "next/server";
-import { FruitLabel, PredictionResult } from "@/lib/types";
+
+// Same small types app/page.tsx uses - just copied here so this route
+// doesn't need to import from anywhere else.
+type FruitLabel = "apple" | "banana" | "unknown";
+interface PredictionResult {
+  label: FruitLabel;
+  confidence: number;
+}
 
 // This tells Next.js to never cache this route - every request has a
 // different uploaded photo, so caching wouldn't make sense here.
