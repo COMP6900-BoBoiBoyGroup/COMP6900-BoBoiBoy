@@ -30,7 +30,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={displayFont.variable}>
-      <body className="min-h-screen bg-cream-100 text-ink-900 antialiased">
+      <body className="min-h-screen bg-white text-ink-900 antialiased">
         {children}
       </body>
     </html>

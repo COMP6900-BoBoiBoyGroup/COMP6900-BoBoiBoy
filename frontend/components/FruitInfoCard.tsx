@@ -6,6 +6,7 @@
 // fetch or look up anything itself.
 
 import { FruitInfo } from "@/lib/types";
+import Image from "next/image";
 
 interface FruitInfoCardProps {
   info: FruitInfo;
@@ -13,12 +14,16 @@ interface FruitInfoCardProps {
 
 export default function FruitInfoCard({ info }: FruitInfoCardProps) {
   return (
-    <div className="w-full rounded-2xl border-2 border-ink-900 bg-cream-50 p-6 shadow-[4px_4px_0_0_#2a2015]">
+    <div className="w-full border-2 border-ink-900 bg-cream-50 p-6 shadow-[4px_4px_0_0_#2a2015]">
       <div className="mb-4 flex items-center gap-3">
-        <span className="text-4xl" aria-hidden>
-          {info.emoji}
-        </span>
-        <div>
+          <Image
+            src={info.displayName === "Apple" ? "/icons/apple.svg" : "/icons/banana.svg"}
+            alt=""
+            width={56}
+            height={56}
+            className="h-14 w-14 shrink-0 object-contain"
+          />
+      <div>
           <h2 className="font-display text-xl font-semibold text-ink-900">
             {info.displayName}
           </h2>
@@ -31,7 +36,7 @@ export default function FruitInfoCard({ info }: FruitInfoCardProps) {
           {info.nutrition.map((item) => (
             <div
               key={item.label}
-              className="flex items-center justify-between rounded-lg border border-ink-200 bg-cream-100 px-3 py-2 text-sm"
+              className="flex items-center justify-between border border-ink-200 bg-cream-100 px-3 py-2 text-sm"
             >
               <dt className="text-ink-500">{item.label}</dt>
               <dd className="font-medium text-ink-800">{item.value}</dd>

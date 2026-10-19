@@ -16,10 +16,10 @@ export default function ConfidenceBar({ confidence }: ConfidenceBarProps) {
   // high, yellow for medium, red for low.
   const barColor =
     percent >= 80
-      ? "bg-brand-500"
+      ? "bg-ui-progressHigh"
       : percent >= 50
-      ? "bg-banana-500"
-      : "bg-apple-500";
+      ? "bg-ui-progressMedium"
+      : "bg-ui-progressLow";
 
   return (
     <div className="w-full">

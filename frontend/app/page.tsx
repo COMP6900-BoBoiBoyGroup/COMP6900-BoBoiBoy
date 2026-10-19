@@ -108,9 +108,9 @@ export default function HomePage() {
               onClick={handleIdentify}
               disabled={!canIdentify}
               className={[
-                "flex-1 rounded-xl border-2 px-4 py-3 font-semibold transition-all",
+                "flex-1 rounded-xl border px-4 py-3 font-semibold transition-all",
                 canIdentify
-                  ? "border-ink-900 bg-brand-500 text-white shadow-[3px_3px_0_0_#2a2015] hover:bg-brand-600 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+                  ? "border-ink-900 bg-brand-500 text-white hover:bg-white hover:text-black active:translate-x-[2px] active:translate-y-[2px]"
                   : "cursor-not-allowed border-ink-300 bg-cream-200 text-ink-500",
               ].join(" ")}
             >
@@ -121,7 +121,7 @@ export default function HomePage() {
               <button
                 onClick={handleReset}
                 disabled={status === "loading"}
-                className="rounded-xl border-2 border-ink-900 bg-cream-50 px-4 py-3 font-medium text-ink-800 shadow-[3px_3px_0_0_#2a2015] hover:bg-cream-200 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-xl border border-ink-900 bg-cream-50 px-4 py-3 font-medium text-ink-800 hover:bg-cream-200 active:translate-x-[2px] active:translate-y-[2px] disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Reset
               </button>

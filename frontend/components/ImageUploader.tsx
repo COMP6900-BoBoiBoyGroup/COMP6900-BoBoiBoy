@@ -93,12 +93,12 @@ export default function ImageUploader({
         tabIndex={0}
         aria-label="Upload a photo of a fruit"
         className={[
-          "flex min-h-[260px] w-full cursor-pointer flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed p-6 text-center transition-colors",
+          "flex min-h-[260px] w-full cursor-pointer flex-col items-center justify-center gap-3 border-2 border-dashed p-6 text-center transition-colors",
           disabled
             ? "cursor-not-allowed border-ink-200 bg-cream-200 opacity-60"
             : isDragging
             ? "border-brand-500 bg-brand-50"
-            : "border-ink-300 bg-cream-50 hover:border-brand-500 hover:bg-brand-50",
+            : "border-ink-300 bg-cream-50 hover:border-brand-500 hover:bg-cream-100",
         ].join(" ")}
       >
         {previewUrl ? (
@@ -109,11 +109,11 @@ export default function ImageUploader({
           <img
             src={previewUrl}
             alt="Selected fruit preview"
-            className="max-h-56 rounded-xl object-contain shadow-sm"
+            className="max-h-56 object-contain shadow-sm"
           />
         ) : (
           <>
-            <span className="text-4xl">📷</span>
+            <img src="/icons/image.svg" alt="" width={36} height={36} />
             <p className="font-medium text-ink-700">
               Click to choose a photo, or drag one in here
             </p>
