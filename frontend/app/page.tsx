@@ -6,6 +6,7 @@
 // so it's easier to follow top to bottom.
 
 import { ChangeEvent, useRef, useState } from "react";
+import Image from "next/image";
 
 // ---------------------------------------------------------------------
 // Types
@@ -148,9 +149,9 @@ async function identifyFruit(file: File): Promise<PredictionResult> {
 
 function ConfidenceBar({ confidence }: { confidence: number }) {
   const percent = Math.round(confidence * 100);
-  let barColor = "bg-red-500";
-  if (percent >= 80) barColor = "bg-green-500";
-  else if (percent >= 50) barColor = "bg-yellow-500";
+  let barColor = "bg-[#D50021]";
+  if (percent >= 80) barColor = "bg-[#008045]";
+  else if (percent >= 50) barColor = "bg-[#FFC31F]";
 
   return (
     <div className="w-full">
@@ -196,9 +197,15 @@ function BulletList({ items }: { items: string[] }) {
 
 function FruitInfoCard({ info }: { info: FruitInfo }) {
   return (
-    <div className="w-full rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+    <div className="w-full border-2 border-black bg-white p-6 shadow-[4px_4px_0_0_#000000]">
       <div className="mb-4 flex items-center gap-3">
-        <span className="text-4xl">{info.emoji}</span>
+        <Image
+            src={info.displayName === "Apple" ? "/icons/apple.svg" : "/icons/banana.svg"}
+            alt=""
+            width={56}
+            height={56}
+            className="h-14 w-14 shrink-0 object-contain"
+        />
         <div>
           <h2 className="text-xl font-bold text-gray-900">{info.displayName}</h2>
           <p className="text-sm text-gray-500">{info.summary}</p>
@@ -210,7 +217,7 @@ function FruitInfoCard({ info }: { info: FruitInfo }) {
           {info.nutrition.map((item) => (
             <div
               key={item.label}
-              className="flex items-center justify-between rounded border border-gray-100 bg-gray-50 px-3 py-2 text-sm"
+              className="flex items-center justify-between border border-gray-300 bg-gray-100 px-3 py-2 text-sm"
             >
               <dt className="text-gray-500">{item.label}</dt>
               <dd className="font-medium text-gray-800">{item.value}</dd>
@@ -323,19 +330,22 @@ function ImageUploader({
 const CONFIDENCE_THRESHOLD = 0.5;
 
 function EmptyState({
-  emoji,
   title,
   description,
-  spinner,
 }: {
-  emoji: string;
   title: string;
   description: string;
-  spinner?: boolean;
 }) {
   return (
-    <div className="flex min-h-[260px] w-full flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 bg-white p-6 text-center">
-      <span className={`text-4xl ${spinner ? "animate-pulse" : ""}`}>{emoji}</span>
+    <div className="flex min-h-[260px] w-full flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-300 bg-white p-6 text-center">
+      <Image
+        src="/icons/time.svg"
+        alt=""
+        width={36}
+        height={36}
+        className="animate-[spin_3s_linear_infinite]"
+        aria-hidden="true"
+      />
       <p className="font-medium text-gray-800">{title}</p>
       <p className="max-w-sm text-sm text-gray-500">{description}</p>
     </div>
@@ -353,19 +363,24 @@ function ResultPanel({
 }) {
   if (step === "loading") {
     return (
-      <EmptyState
-        emoji="⏳"
-        title="Analysing your photo..."
-        description="Sending the image to the model backend. This usually takes a few seconds."
-        spinner
-      />
+        <EmptyState
+          title="Analysing your photo..."
+          description="Sending the image to the model backend. This usually takes a few seconds."
+        />
     );
   }
 
   if (step === "error") {
     return (
-      <div className="w-full rounded-lg border border-red-300 bg-red-50 p-6 text-center">
-        <p className="mb-1 text-2xl">⚠️</p>
+      <div className="w-full border border-red-500 bg-red-50/50 p-6 text-center">
+        <Image
+          src="/icons/exclamation.svg"
+          alt=""
+          width={24}
+          height={24}
+          className="mx-auto mb-1 block"
+          aria-hidden="true"
+        />
         <p className="font-medium text-red-700">Something went wrong</p>
         <p className="mt-1 text-sm text-gray-700">{error ?? "Please try again."}</p>
       </div>
@@ -381,7 +396,7 @@ function ResultPanel({
 
   if (!info) {
     return (
-      <div className="w-full rounded-lg border border-yellow-300 bg-yellow-50 p-6 text-center">
+      <div className="w-full border border-amber-500 bg-amber-50/50 p-6 text-center">
         <p className="mb-1 text-2xl">🤔</p>
         <p className="font-medium text-gray-800">
           Couldn&apos;t confidently identify an apple or banana
@@ -400,9 +415,16 @@ function ResultPanel({
 
   return (
     <div className="w-full space-y-4">
-      <div className="rounded-lg border border-gray-200 bg-green-50 p-4 shadow-sm">
-        <p className="text-sm font-semibold text-green-700">
-          Identified as {info.displayName} {info.emoji}
+      <div className="border-2 border-black bg-white p-4 shadow-[3px_3px_0_0_#000000]">
+        <p className="flex items-center gap-1 whitespace-nowrap text-sm font-bold text-black">
+          <span>Identified as {info.displayName}</span>
+          <Image
+            src={prediction.label === "apple" ? "/icons/apple.svg" : "/icons/banana.svg"}
+            alt=""
+            width={14}
+            height={14}
+            className="h-[14px] w-[14px] shrink-0 object-contain"
+          />
         </p>
         <div className="mt-3">
           <ConfidenceBar confidence={prediction.confidence} />
