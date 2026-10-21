@@ -197,7 +197,7 @@ function BulletList({ items }: { items: string[] }) {
 
 function FruitInfoCard({ info }: { info: FruitInfo }) {
   return (
-    <div className="w-full border-2 border-black bg-white p-6 shadow-[4px_4px_0_0_#000000]">
+    <div className="w-full bg-white p-6">
       <div className="mb-4 flex items-center gap-3">
         <Image
             src={info.displayName === "Apple" ? "/icons/apple.svg" : "/icons/banana.svg"}
@@ -415,7 +415,7 @@ function ResultPanel({
 
   return (
     <div className="w-full space-y-4">
-      <div className="border-2 border-black bg-white p-4 shadow-[3px_3px_0_0_#000000]">
+      <div className="bg-white p-4">
         <p className="flex items-center gap-1 whitespace-nowrap text-sm font-bold text-black">
           <span>Identified as {info.displayName}</span>
           <Image
