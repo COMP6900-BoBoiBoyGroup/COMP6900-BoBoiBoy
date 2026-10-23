@@ -72,8 +72,8 @@ def predict_image(image_source, conf_threshold = 0.90, energy_threshold=-1.3584)
 
     # Stage 1
     label, prob, energy, probs = run_model(fruit_model,fruit_classes,img)
-    if prob < conf_threshold or energy > energy_threshold:
-            label = UNKNOWN
+    #if prob < conf_threshold or energy > energy_threshold:
+    #        label = UNKNOWN
     
     results = {
         "Status": label,
@@ -86,7 +86,7 @@ def predict_image(image_source, conf_threshold = 0.90, energy_threshold=-1.3584)
     }
 
 
-    # Stage 2
+    # Stage 2 
     if label.strip().lower() != "banana":
         return results
 
