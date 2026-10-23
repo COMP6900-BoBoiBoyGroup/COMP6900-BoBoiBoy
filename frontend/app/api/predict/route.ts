@@ -25,6 +25,8 @@ type FruitLabel = "apple" | "banana" | "unknown";
 interface PredictionResult {
   label: FruitLabel;
   confidence: number;
+  ripe: string;
+  ripe_confidence: number;
 }
 
 // This tells Next.js to never cache this route - every request has a
@@ -125,6 +127,9 @@ export async function POST(request: NextRequest) {
   const label = backendJson.label as FruitLabel | undefined;
   const confidence = backendJson.confidence as number | undefined;
 
+  const ripe = backendJson.ripe as string | "none";
+  const ripe_confidence = backendJson.ripe_confidence as number | 0.0;
+
   const isValidLabel = label === "apple" || label === "banana" || label === "unknown";
   if (!isValidLabel || typeof confidence !== "number") {
     return NextResponse.json(
@@ -133,7 +138,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const result: PredictionResult = { label, confidence };
+  const result: PredictionResult = { label, confidence, ripe, ripe_confidence };
   return NextResponse.json(result);
 }
 

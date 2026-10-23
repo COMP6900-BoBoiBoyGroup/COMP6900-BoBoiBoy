@@ -1,5 +1,5 @@
 from fastapi import FastAPI, File, UploadFile
-from model.model_inference import predict_image
+from model.two_stage_inference import predict_image
 
 app = FastAPI()
 
@@ -19,20 +19,33 @@ def predict_image_wrapper(image_file):
     prediction = predict_image(image_file)
     result = {
             "label": "",
-            "confidence": 0.0
+            "confidence": 0.0,
+            "ripe": "",
+            "ripe_confidence": ""
     }
+    print(prediction)
 
     # Convert the Top Probability to a float
     # Thank you https://stackoverflow.com/a/12432693 for the method
-    confidence_float = prediction["Top Probability"].strip().strip("%")
-    confidence_float = float(confidence_float) / 100
+    fruit_confidence_float = prediction["Top Probability"].strip().strip("%")
+    fruit_confidence_float = float(fruit_confidence_float) / 100
+
 
     # Re-format the prediction into a result that the frontend can use
     if (prediction["Status"][:7] == "Unknown"):
         result.update({"label": "unknown"})
     else:
         result.update({"label": prediction["Status"]})
-    result.update({"confidence": confidence_float})
+    result.update({"confidence": fruit_confidence_float})
+
+    # If a banana is identified, also return ripeness:
+    if (prediction["Status"][:6] == "banana"):
+        # Do the same conversion for Ripeness probability
+        ripe_confidence_float = prediction["Ripeness Probability"].strip().strip("%")
+        ripe_confidence_float = float(ripe_confidence_float) / 100
+        # Include Ripeness into the result
+        result.update({"ripe": prediction["Ripeness"]})
+        result.update({"ripe_confidence": ripe_confidence_float})
     return result
     
 

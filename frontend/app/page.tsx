@@ -18,6 +18,8 @@ type Step = "idle" | "loading" | "error" | "success";
 interface PredictionResult {
   label: FruitLabel;
   confidence: number;
+  ripe: string;
+  ripe_confidence: number;
 }
 
 interface PredictionError {
@@ -409,6 +411,37 @@ function ResultPanel({
             <ConfidenceBar confidence={prediction.confidence} />
           </div>
         )}
+      </div>
+    );
+  }
+
+  if (prediction.label === "banana") {
+    return (
+      <div className="w-full space-y-4">
+        <div className="bg-white p-4">
+          <p className="flex items-center gap-1 whitespace-nowrap text-sm font-bold text-black">
+            <span>Identified as {info.displayName}</span>
+            <Image
+              src="/icons/banana.svg"
+              alt=""
+              width={14}
+              height={14}
+              className="h-[14px] w-[14px] shrink-0 object-contain"
+            />
+          </p>
+          <div className="mt-3">
+            <ConfidenceBar confidence={prediction.confidence} />
+          </div>
+        </div>
+        <div className="bg-white p-4">
+          <p className="flex items-center gap-1 whitespace-nowrap text-sm font-bold text-black">
+            <span>The banana is {prediction.ripe}</span>
+          </p>
+          <div className="mt-3">
+            <ConfidenceBar confidence={prediction.ripe_confidence} />
+          </div>
+        </div>
+        <FruitInfoCard info={info} />
       </div>
     );
   }
