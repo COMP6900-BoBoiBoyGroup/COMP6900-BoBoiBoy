@@ -67,13 +67,13 @@ def run_model(model, classes, image):
         top_prob, pred_idx = torch.max(probs, dim=0)
     return classes[pred_idx.item()], top_prob.item(), energy, probs
 
-def predict_image(image_source, conf_threshold = 0.90, energy_threshold=-1.3584):
+def predict_image(image_source, conf_threshold = 0.90, energy_threshold= -1.3584):
     img = Image.open(image_source).convert("RGB")
 
     # Stage 1
     label, prob, energy, probs = run_model(fruit_model,fruit_classes,img)
-    #if prob < conf_threshold or energy > energy_threshold:
-    #        label = UNKNOWN
+    if prob < conf_threshold or energy > energy_threshold:
+            label = UNKNOWN
     
     results = {
         "Status": label,

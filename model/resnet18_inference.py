@@ -43,7 +43,7 @@ inference_transform = transforms.Compose([
 ])
 
 # Prediction function
-def predict_image(image_path: str, conf_threshold: float = 0.90, energy_threshold: float = -4.7):
+def predict_image(image_path: str, conf_threshold: float = 0.90, energy_threshold: float = -1.3584):
   img = Image.open(image_path).convert("RGB")
   # Preprocess: adds batch dimension --> Shape: (1,3,224,224)
   tensor = inference_transform(img).unsqueeze(0).to(device)
