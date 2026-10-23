@@ -52,7 +52,6 @@ def predict_image(image_path: str, conf_threshold: float = 0.90, energy_threshol
     logits = model(tensor)
     probs = torch.softmax(logits, dim=1)[0]
     energy = -torch.logsumexp(logits, dim=1).item()
-
     top_prob, pred_idx = torch.max(probs, dim=0)
     top_prob = top_prob.item()
     pred_idx = pred_idx.item()
