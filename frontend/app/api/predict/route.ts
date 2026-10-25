@@ -147,5 +147,7 @@ export async function POST(request: NextRequest) {
 function getMockPrediction(): PredictionResult {
   const label: FruitLabel = Math.random() > 0.5 ? "apple" : "banana";
   const confidence = Math.round((0.75 + Math.random() * 0.24) * 1000) / 1000;
-  return { label, confidence };
+  const ripe = "ripe";
+  const ripe_confidence = Math.round((0.75 + Math.random() * 0.24) * 1000) / 1000;
+  return { label, confidence, ripe, ripe_confidence};
 }
