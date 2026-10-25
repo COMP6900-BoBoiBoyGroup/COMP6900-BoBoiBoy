@@ -1,5 +1,21 @@
 # Packages require to run model_inference.py
+#
+# IMPORTANT: this installs the CPU-only build of torch/torchvision (via
+# the extra index below) instead of the default PyPI build, which bundles
+# several GB of GPU/CUDA libraries we don't need for simple CNN inference.
+# This is what Render's Build Command (`pip install -r model/requirement.txt
+# "fastapi[standard]"`) actually runs, so this file - not the root
+# requirements.txt (that one's for the abandoned Vercel-backend attempt) -
+# is what controls what gets installed in production.
+#
+# NOTE: torch/torchvision MUST be pinned to an exact "==X.Y.Z+cpu" version
+# here. PEP 440 only matches local version labels (the "+cpu" suffix)
+# against an exact "==" specifier or no specifier at all - range operators
+# like ">=" ignore the label, so an unpinned ">=2.5" silently resolves to
+# the default GPU build from PyPI instead of the CPU build on the extra
+# index below. See https://peps.python.org/pep-0440/#version-matching.
+--extra-index-url https://download.pytorch.org/whl/cpu
 numpy>=1.18,<2.4
 Pillow>=11.3.0
-torch>=2.5
-torchvision>=0.20
+torch==2.14.1+cpu
+torchvision==0.29.1+cpu
