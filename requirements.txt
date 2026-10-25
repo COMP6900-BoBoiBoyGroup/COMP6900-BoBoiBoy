@@ -6,10 +6,18 @@
 # the extra index below) instead of the default PyPI build, which bundles
 # several GB of GPU/CUDA libraries we don't need for simple CNN inference.
 # Without this, the deployment bundle is ~5 GB and fails Vercel's 500 MB
-# function size limit.
+# function size limit, and also blows past Render's 512 MB memory limit
+# at runtime (pulls in nvidia-*/cuda-toolkit/triton packages).
+#
+# NOTE: torch/torchvision MUST be pinned to an exact "==X.Y.Z+cpu" version
+# here. PEP 440 only matches local version labels (the "+cpu" suffix)
+# against an exact "==" specifier or no specifier at all - range operators
+# like ">=" ignore the label, so an unpinned ">=2.5" silently resolves to
+# the default GPU build from PyPI instead of the CPU build on the extra
+# index below. See https://peps.python.org/pep-0440/#version-matching.
 --extra-index-url https://download.pytorch.org/whl/cpu
 fastapi
 numpy>=1.18,<2.4
 Pillow>=11.3.0
-torch>=2.5
-torchvision>=0.20
+torch==2.14.1+cpu
+torchvision==0.29.1+cpu
