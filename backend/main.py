@@ -40,11 +40,24 @@ def predict_image_wrapper(image_file):
 
     # If a banana is identified, also return ripeness:
     if (prediction["Status"][:6] == "banana"):
+
         # Do the same conversion for Ripeness probability
         ripe_confidence_float = prediction["Ripeness Probability"].strip().strip("%")
         ripe_confidence_float = float(ripe_confidence_float) / 100
+
+        # Re-format the ripeness label
+        ripe_label = "Unknown"
+        if (prediction["Ripeness"] == "ripe"):
+            ripe_label = "Ripe"
+        elif (prediction["Ripeness"] == "overripe"):
+            ripe_label = "Over Ripe"
+        elif (prediction["Ripeness"] == "rotten"):
+            ripe_label = "Rotten"
+        elif (prediction["Ripeness"] == "unripe"):
+            ripe_label = "Not Ripe"
+
         # Include Ripeness into the result
-        result.update({"ripe": prediction["Ripeness"]})
+        result.update({"ripe": ripe_label})
         result.update({"ripe_confidence": ripe_confidence_float})
     return result
     
