@@ -47,12 +47,25 @@ const FRUIT_INFO: { apple: FruitInfo; banana: FruitInfo } = {
     summary:
       "A crisp, versatile fruit that's one of the most widely eaten fruits in the world, available in many varieties and colours.",
     nutrition: [
-      { label: "Calories", value: "~95 kcal per medium apple (182g)" },
-      { label: "Carbohydrates", value: "~25 g" },
-      { label: "Dietary fibre", value: "~4 g" },
-      { label: "Sugars", value: "~19 g (natural)" },
-      { label: "Vitamin C", value: "~14% of daily value" },
-      { label: "Potassium", value: "~195 mg" },
+      // Original Placeholder nutrients
+      // { label: "Calories", value: "~95 kcal per medium apple (182g)" },
+      // { label: "Carbohydrates", value: "~25 g" },
+      // { label: "Dietary fibre", value: "~4 g" },
+      // { label: "Sugars", value: "~19 g (natural)" },
+      // { label: "Vitamin C", value: "~14% of daily value" },
+      // { label: "Potassium", value: "~195 mg" },
+
+
+      // Other nutrients, but still according to foodstandards.gov.au (per 100g)
+      { label: "Energy", value: "188kJ - 248kJ" },
+      { label: "Calories", value: "44.9kcal - 59.2kcal" },
+      // Macronutrients according to foodstandards.gov.au (per 100g)
+      { label: "Protein", value: "~3g (0.2g - 0.4g)" },
+      { label: "Fat", value: "0g - 0.3g" },
+      { label: "Carbohydrates", value: "10.7g - 13.8g" },
+      // Other nutrients, but still according to foodstandards.gov.au (per 100g)
+      { label: "Dietary fibre", value: "1.8g - 3.2g" },
+      { label: "Total sugars", value: "10.6g - 13g" },
     ],
     healthBenefits: [
       "High in soluble fibre (pectin), which supports healthy digestion and steady blood sugar levels.",
@@ -80,12 +93,24 @@ const FRUIT_INFO: { apple: FruitInfo; banana: FruitInfo } = {
     summary:
       "A soft, energy-dense fruit with a distinctive peel, popular as a quick snack and a staple ingredient in baking and smoothies.",
     nutrition: [
-      { label: "Calories", value: "~105 kcal per medium banana (118g)" },
-      { label: "Carbohydrates", value: "~27 g" },
-      { label: "Dietary fibre", value: "~3 g" },
-      { label: "Sugars", value: "~14 g (natural)" },
-      { label: "Potassium", value: "~422 mg" },
-      { label: "Vitamin B6", value: "~22% of daily value" },
+      // Original Placeholder nutrients
+      // { label: "Calories", value: "~105 kcal per medium banana (118g)" },
+      // { label: "Carbohydrates", value: "~27 g" },
+      // { label: "Dietary fibre", value: "~3 g" },
+      // { label: "Sugars", value: "~14 g (natural)" },
+      // { label: "Potassium", value: "~422 mg" },
+      // { label: "Vitamin B6", value: "~22% of daily value" },
+
+      // Other nutrients, but still according to foodstandards.gov.au (per 100g)
+      { label: "Energy", value: "371kJ - 489kJ" },
+      { label: "Calories", value: "88.6kcal - 116.8kcal" },
+      // Macronutrients according to foodstandards.gov.au (per 100g)
+      { label: "Protein", value: "1g - 1.4g" },
+      { label: "Fat", value: "0g - 0.2g" },
+      { label: "Carbohydrates", value: "19.9g - 26.9g" },
+      // Other nutrients, but still according to foodstandards.gov.au (per 100g)
+      { label: "Dietary fibre", value: "2.2g - 3g" },
+      { label: "Total sugars", value: "13.4g - 16.9g" },
     ],
     healthBenefits: [
       "Excellent source of potassium, supporting healthy blood pressure and muscle function.",
