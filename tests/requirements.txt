@@ -2,7 +2,6 @@
 # (Separate from model/requirement.txt and backend/tests/, which cover
 # model/backend unit-level cases instead.)
 pytest>=8.0
-requests>=2.31
 Pillow>=11.3.0
 
 # tests/test_frontend.py (browser-driven UI test cases 8-11) - also run:
