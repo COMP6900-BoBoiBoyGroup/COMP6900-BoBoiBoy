@@ -1,0 +1,7 @@
+# Dependencies for tests/test_use_cases_section_a.py
+# (Section A end-to-end/deployment use case tests, separate from
+# model/requirement.txt and backend/tests/, which cover model/backend
+# unit-level cases instead.)
+pytest>=8.0
+requests>=2.31
+Pillow>=11.3.0
