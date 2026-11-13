@@ -20,9 +20,9 @@ frontend/   Web UI (Next.js, deployed on Vercel) - upload a photo, show results
 backend/    FastAPI service that receives the image and returns a prediction
             (deployed on Render)
 model/      CNN training/evaluation code + the trained model (see model/README.md)
-dataset/    Training/testing images and dataset notes (not yet added - large
-            raw images should NOT be committed directly once it is, see
-            the note in .gitignore)
+dataset/    Roboflow exports of the training/validation/test images as zip
+            archives, stored with Git LFS (run `git lfs pull` after cloning;
+            see model/README.md for contents and sources)
 ```
 
 ## How a request flows end-to-end
@@ -44,13 +44,18 @@ and where each piece of that is implemented:
    backend's URL off the client.
 4. **Backend inference:** `backend/main.py` (`POST /predict`, deployed on
    Render) receives the image and calls `predict_image()` from
-   `model/model_inference.py`, which runs the trained CNN
-   (`model/weights/best_custom_cnn.pth`) and returns a dict with the raw
-   `Status`, `Top Probability`, `Energy Score`, and per-class probabilities
-   (see `model/README.md` for exactly how that score is computed).
+   `model/two_stage_inference.py`. Stage 1 runs a fine-tuned ResNet18
+   (`model/weights/best_resnet18.pth`) to classify apple / banana / unknown.
+   If the result is a banana, stage 2 runs a second ResNet18
+   (`model/weights/resnet18_banana_ripeness.pth`) to predict ripeness. It
+   returns a dict with the raw `Status`, `Top Probability`, `Energy Score`,
+   per-class probabilities, and (bananas only) `Ripeness` fields (see
+   `model/README.md` for how the unknown cutoff is computed).
 5. **Backend reshapes the result:** `backend/main.py` converts that raw
    dict into the small JSON shape the frontend expects:
-   `{ "label": "apple" | "banana" | "unknown", "confidence": 0.0-1.0 }`.
+   `{ "label": "apple" | "banana" | "unknown", "confidence": 0.0-1.0,
+   "ripe": "Not Ripe" | "Ripe" | "Over Ripe" | "Rotten" | "", "ripe_confidence": 0.0-1.0 | "" }`
+   (the ripeness fields are empty unless the label is `banana`).
    This is the *only* thing that crosses the network back to the frontend -
    the backend does not send any nutrition/health/usage text.
 6. **Our API route returns it to the browser**, after checking the shape
@@ -68,7 +73,8 @@ and where each piece of that is implemented:
    - `frontend/components/ConfidenceBar.tsx` renders the confidence score
      as a progress bar.
 
-In short: **the model only ever returns a label + a confidence number** -
+In short: **the model only ever returns a label + a confidence number**
+(plus a ripeness label and confidence for bananas) -
 everything else the user sees (nutrition tables, health tips, etc.) is
 frontend-only static content, selected based on that label.
 
@@ -144,8 +150,8 @@ the Vercel project settings: `BACKEND_API_URL=https://comp6900-boboiboy-b816.onr
 
 | Requirement | Status |
 | --- | --- |
-| 1. Source/collect training & testing dataset (~2000+ images) | Used for training (see `model/scripts/custom_cnn_training.ipynb`); not committed to this repo (see `dataset/` note above) |
-| 2. Identify apple + banana (bare minimum) | Done - trained CNN in `model/`, served via `backend/`, deployed and connected to `frontend/` |
+| 1. Source/collect training & testing dataset (~2000+ images) | Done - 6,225 apple/banana images and 5,616 banana ripeness images (Roboflow, CC BY 4.0), committed as zips in `dataset/` via Git LFS |
+| 2. Identify apple + banana (bare minimum) | Done - fine-tuned ResNet18 in `model/` (plus a custom CNN baseline and a banana ripeness model), served via `backend/`, deployed and connected to `frontend/` |
 | 3. Upload a photo → CNN classifies it | Done end-to-end (see "How a request flows end-to-end" above) |
 | 4. Show nutrition/health/ripeness/usage info once identified | Done in `frontend/` (`lib/fruitInfo.ts` + `components/FruitInfoCard.tsx`) |
 | 5. All code commented, with explanation of how it was built | Done for `frontend/` and `backend/`; see `model/README.md` for the model |
