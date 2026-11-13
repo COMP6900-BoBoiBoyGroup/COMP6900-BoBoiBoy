@@ -51,7 +51,7 @@
 **/dataset/**/*.jpg
 **/dataset/**/*.jpeg
 **/dataset/**/*.png
-
+**/dataset/**/*.zip
 # Logs (e.g. from local dev servers)
 **/*.log
 
